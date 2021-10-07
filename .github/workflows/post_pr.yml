@@ -1,0 +1,27 @@
+name: Close PR
+
+on:
+  pull_request:
+      types: [ closed ]
+  workflow_dispatch:
+
+env:
+  app-name: "devopsconf2021-testapi"
+  rg-name: "rg-devopsconf2021"
+  slot-name: pr-${{ github.event.number }}
+
+jobs:
+  clean_up:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login via Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Delete PR Slot
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.0.72
+          inlineScript: az webapp deployment slot delete --name ${{ env.app-name }} --resource-group ${{ env.rg-name }} --slot ${{ env.slot-name }}

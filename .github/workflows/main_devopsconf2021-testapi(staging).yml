@@ -1,0 +1,107 @@
+name: Build and deploy APIs
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/README.md'
+      - '**/.azuredevops/**'
+  workflow_dispatch:
+
+env:
+  app-name: "devopsconf2021-testapi"
+  rg-name: "rg-devopsconf2021"
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+          include-prerelease: true
+
+      - name: Restore dotnet packages
+        run: dotnet restore ./src/TestApi/TestApi.csproj
+
+      - name: Build with dotnet
+        run: dotnet build ./src/TestApi/TestApi.csproj --configuration Release
+
+      - name: Publish with dotnet
+        run: dotnet publish ./src/TestApi/TestApi.csproj -c Release -o ${{env.DOTNET_ROOT}}/loadtestapi
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v2
+        with:
+          name: .net-app
+          path: ${{env.DOTNET_ROOT}}/loadtestapi
+
+  deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      webapp-url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    needs: build
+    environment:
+      name: 'staging'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v2
+        with:
+          name: .net-app
+
+      - name: Login via Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.app-name }}
+          slot-name: 'staging'
+          package: .
+
+  loadtest:
+    runs-on: ubuntu-latest
+    needs: deploy
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Run LoadTests
+        uses: k6io/action@v0.1
+        with:
+          filename: './src/LoadTests/loadtest.js'
+          flags: -e MY_HOSTNAME=${{ needs.deploy.outputs.webapp-url }}
+
+  deploy_prod:
+    needs: loadtest
+    runs-on: ubuntu-latest
+
+    environment:
+      name: PROD
+      url: ${{ steps.slot_swap.outputs.url }}
+
+    steps:
+    - name: Login via Azure CLI
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Swap staging slot into production
+      id: slot_swap
+      run: |
+        az webapp deployment slot swap -g ${{ env.rg-name }} -n ${{ env.app-name }} -s staging
+        url=$(az webapp show -g ${{ env.rg-name }} -n ${{ env.app-name }} --query "defaultHostName" -o tsv)
+        echo "::set-output name=url::http://$url"
+
+    - name: az cli logout
+      run: az logout

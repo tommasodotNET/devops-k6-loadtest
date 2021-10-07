@@ -1,0 +1,25 @@
+pool:
+  vmImage: windows-latest
+
+variables:
+  storageAccountName: "sadevopsconf2021"
+  logTableName: "loadtestresult"
+  logFullTableName: "loadtestresultfull"
+
+jobs:
+- job: LoadTest
+  displayName: Run Load Tests
+  steps:
+    - task: PowerShell@2
+      displayName: Run Load Tests
+      inputs:
+        filePath: .azuredevops/scripts/RunK6LoadTest.ps1
+        arguments: '-SubscriptionGuid $(SubscriptionGuid) -TenantId $(TenantId) -ClientId $(ClientId) -ClientSecret $(ClientSecret) -storageAccountName $(storageAccountName) -logWorkspaceId $(logWorkspaceId) -logWorkspaceKey $(logWorkspaceKey) -logTableName $(logTableName) -logFullTableName $(logFullTableName)'
+        pwsh: true
+
+    - task: PowerShell@2
+      displayName: Quality Gate
+      inputs:
+        filePath: .azuredevops/scripts/QualityGateLoadTest.ps1
+        arguments: '-SubscriptionGuid $(SubscriptionGuid) -TenantId $(TenantId) -ClientId $(ClientId) -ClientSecret $(ClientSecret) -logWorkspaceId $(logWorkspaceId) -logWorkspaceKey $(logWorkspaceKey) -logTableName $(logTableName) -logFullTableName $(logFullTableName)'
+        pwsh: true
