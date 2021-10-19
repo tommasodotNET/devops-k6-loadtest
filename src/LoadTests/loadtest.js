@@ -13,7 +13,7 @@ export const options = {
 
 export default function () {
   const resFast = http.get(`${__ENV.MY_HOSTNAME}/fastapi`);
-  const resSlow = http.get(`${__ENV.MY_HOSTNAME}/slowapi`);
+  // const resSlow = http.get(`${__ENV.MY_HOSTNAME}/slowapi`);
 
   sleep(1);
 }
