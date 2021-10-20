@@ -47,7 +47,7 @@ jobs:
       webapp-url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     needs: build
     environment:
-      name: 'staging'
+      name: 'Staging'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -87,7 +87,7 @@ jobs:
     runs-on: ubuntu-latest
 
     environment:
-      name: PROD
+      name: Prod
       url: ${{ steps.slot_swap.outputs.url }}
 
     steps:
