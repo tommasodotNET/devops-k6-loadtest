@@ -15,7 +15,7 @@ az config set extension.use_dynamic_install=yes_without_prompt
 az login --service-principal --username $ClientId --password $ClientSecret --tenant $TenantId
 az account set --subscription $SubscriptionGuid
 
-$queryString = "$($logTableName)_CL | where metrics_http_req_connecting_p_90__d > 600 | count"
+$queryString = "$($logTableName)_CL | where metrics_http_req_duration_p_95__d > 600 | count"
 $queryResult = az monitor log-analytics query -w $logWorkspaceID --analytics-query $queryString -t P3DT12H | ConvertFrom-Json
 
 if($($queryResult).Count -eq 0) {
