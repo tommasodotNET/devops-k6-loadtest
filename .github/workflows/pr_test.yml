@@ -44,7 +44,7 @@ jobs:
       webapp-url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     needs: build
     environment:
-      name: ${{ env.slot-name }}
+      name: "PR"
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
