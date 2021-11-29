@@ -125,7 +125,7 @@ Write-Host "Creating agents container(s)"
     Write-Host "Creating K6 agent $_"
     az container create --resource-group $using:loadTestResourceGroup --name "$using:AciK6AgentNamePrefix-$_" --location $using:loadTestLocation `
         --image $using:K6AgentImage --restart-policy Never --cpu $using:K6AgentCPU --memory $using:K6AgentMemory `
-        --environment-variables AGENT_NUM=$_ LOAD_TEST_ID=$using:loadTestIdentifier TEST_VUS=$using:loadTestVUS TEST_DURATION=$using:loadTestDuration MY_HOSTNAME="https://devopsconf2021-testapi.azurewebsites.net" `
+        --environment-variables AGENT_NUM=$_ LOAD_TEST_ID=$using:loadTestIdentifier TEST_VUS=$using:loadTestVUS TEST_DURATION=$using:loadTestDuration MY_HOSTNAME="https://devops-k6-loadtest.azurewebsites.net" `
         --azure-file-volume-account-name $using:storageAccountName --azure-file-volume-account-key $using:storageAccountKey --azure-file-volume-share-name $using:storageShareName --azure-file-volume-mount-path "/$using:AciK6AgentLoadTestHome/" `
         --command-line "k6 run /$using:AciK6AgentLoadTestHome/$using:loadTestIdentifier/script.js --summary-export /$using:AciK6AgentLoadTestHome/$using:loadTestIdentifier/${using:loadTestIdentifier}_${_}_summary.json --out json=/$using:AciK6AgentLoadTestHome/$using:loadTestIdentifier/${using:loadTestIdentifier}_$_.json" 
 } -ThrottleLimit 10
