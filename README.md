@@ -1,4 +1,4 @@
-# K6 LoadTest Automation - DevOps Conf 2021
+# K6 LoadTest Automation
 
 This repo is a demo for the integration of k6 loadtesting in GitHub and Azure DevOps, using both native k6 actions and custom scripts for leveraging Azure Cloud.
 
