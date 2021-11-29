@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 env:
-  app-name: "devopsconf2021-testapi"
-  rg-name: "rg-devopsconf2021"
+  app-name: "devops-k6-loadtest"
+  rg-name: "rg-devops-k6-loadtest"
 
 jobs:
   build:
