@@ -56,13 +56,13 @@ jobs:
       - name: Set AZ Account
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.0.72
+          azcliversion: 2.9.1
           inlineScript: az account set --subscription 956b7f52-f044-412c-a0ad-90e5aa93daf0
       
       - name: Create PR Slot
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.0.72
+          azcliversion: 2.9.1
           inlineScript: az webapp deployment slot create --name ${{ env.app-name }} --resource-group ${{ env.rg-name }} --slot ${{ env.slot-name }} --subscription 956b7f52-f044-412c-a0ad-90e5aa93daf0
 
       - name: Download artifact from build job
