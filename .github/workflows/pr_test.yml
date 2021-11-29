@@ -52,6 +52,12 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set AZ Account
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.0.72
+          inlineScript: az account set --subscription
       
       - name: Create PR Slot
         uses: azure/CLI@v1
