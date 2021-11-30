@@ -5,7 +5,7 @@ app.MapGet("/fastapi", () => "Hello World!");
 
 app.MapGet("/slowapi", () => 
 {
-    Thread.Sleep(5000);
+    Thread.Sleep(1);
     return "Sorry for the delay... Hello World!";
 });
 
