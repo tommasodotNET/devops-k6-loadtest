@@ -30,4 +30,4 @@ jobs:
         uses: azure/CLI@v1
         with:
           azcliversion: 2.30.0
-          inlineScript: az webapp deployment slot delete --name ${{ env.app-name }} --resource-group ${{ env.rg-name }} --slot ${{ env.slot-name }}
+          inlineScript: az webapp deployment slot delete --name ${{ env.app-name }} --resource-group ${{ env.rg-name }} --slot ${{ env.slot-name }} --subscription 956b7f52-f044-412c-a0ad-90e5aa93daf0
